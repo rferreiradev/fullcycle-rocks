@@ -1,0 +1,13 @@
+FROM golang:alpine AS builder
+
+WORKDIR /app
+COPY fullcycle-rocks.go .
+
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64
+RUN go build -ldflags="-w -s" fullcycle-rocks.go
+
+FROM scratch
+WORKDIR /app
+COPY --from=builder /app/fullcycle-rocks /usr/bin/
+
+ENTRYPOINT ["fullcycle-rocks"]
